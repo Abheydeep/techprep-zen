@@ -1,0 +1,128 @@
+// Prisma-ready schema for the database-backed phase. The v1 app runs local-first,
+// but these models mirror the persisted contracts used by the scheduler and UI.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum ProgressStatus {
+  UNATTEMPTED
+  IN_PROGRESS
+  MASTERED
+}
+
+enum StudyItemType {
+  ALGORITHM
+  SYSTEM
+  QUIZ
+}
+
+model User {
+  id                String            @id @default(cuid())
+  email             String            @unique
+  displayName       String
+  currentStreak     Int               @default(0)
+  bestStreak        Int               @default(0)
+  streakRepairs     Int               @default(0)
+  totalStudyMinutes Int               @default(0)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  progress          UserProgress[]
+  dailySessionLogs  DailySessionLog[]
+}
+
+model AlgorithmicProblem {
+  id                  String         @id
+  title               String
+  patternCategory     String
+  difficulty          Difficulty
+  markdownDescription String
+  starterCode         String
+  optimalSolution     String
+  embeddedVideoUrl    String
+  leetcodeUrl         String
+  prepScore           Int
+  patternTags         String[]
+  pseudoTests         String[]
+  hints               String[]
+  createdAt           DateTime       @default(now())
+  quizItems           QuizItem[]
+
+  @@index([patternCategory])
+  @@index([difficulty])
+}
+
+model SystemDesignModule {
+  id                     String     @id
+  title                  String
+  frameworkCategory      String
+  markdownContent        String
+  architectureDiagramUrl String?
+  resourceUrl            String
+  videoUrl               String?
+  estimatedMinutes       Int
+  senioritySignal        String
+  reshadedChecklist      String[]
+  createdAt              DateTime   @default(now())
+  quizItems              QuizItem[]
+
+  @@index([frameworkCategory])
+}
+
+model QuizItem {
+  id                     String              @id
+  relatedAlgorithmId     String?
+  relatedSystemModuleId  String?
+  relatedItemType        StudyItemType
+  questionText           String
+  jsonOptions            Json
+  correctAnswerIndex     Int
+  educationalExplanation String
+  algorithm              AlgorithmicProblem? @relation(fields: [relatedAlgorithmId], references: [id])
+  systemModule           SystemDesignModule? @relation(fields: [relatedSystemModuleId], references: [id])
+
+  @@index([relatedAlgorithmId])
+  @@index([relatedSystemModuleId])
+}
+
+model UserProgress {
+  id                     String         @id @default(cuid())
+  userId                 String
+  itemId                 String
+  itemType               StudyItemType
+  status                 ProgressStatus @default(UNATTEMPTED)
+  timeSpentSeconds       Int            @default(0)
+  failedSubmissionsCount Int            @default(0)
+  lastAttemptDate        DateTime?
+  completedAt            DateTime?
+  masteredAt             DateTime?
+  notes                  String?
+  user                   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId, itemType])
+  @@index([userId, status])
+}
+
+model DailySessionLog {
+  id                 String   @id @default(cuid())
+  userId             String
+  date               DateTime
+  minutesSpent       Int      @default(0)
+  completedItinerary Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+}

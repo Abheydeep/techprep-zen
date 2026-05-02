@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TechPrep Zen">
+  <rect width="64" height="64" rx="14" fill="#121621"/>
+  <path d="M14 39c8-12 23-18 36-14-5 14-19 22-34 19" fill="none" stroke="#5bb99a" stroke-width="5" stroke-linecap="round"/>
+  <path d="M18 22h28" stroke="#f2b447" stroke-width="5" stroke-linecap="round"/>
+  <path d="M22 31h18" stroke="#d85a3a" stroke-width="5" stroke-linecap="round"/>
+</svg>
