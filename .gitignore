@@ -3,3 +3,6 @@ out/
 node_modules/
 tsconfig.tsbuildinfo
 *.log
+.env
+.env.*
+!.env.example
