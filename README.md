@@ -6,7 +6,7 @@ A local-first technical interview preparation app for DSA, system design, resume
 
 - DSA roadmap and daily study itinerary.
 - System-design modules with whiteboard workspace.
-- Resume Drill plan for defending every resume line in interview follow-ups.
+- Resume Drill roadmap with study material, answer guides, and follow-up practice for every resume line.
 - Local-first progress, streaks, and quiz review.
 
 ## Local Development

@@ -38,6 +38,20 @@ type PreparationIntro = {
   likelyFollowUps: string[];
 };
 
+type StudyTrack = {
+  title: string;
+  focus: string;
+  study: string[];
+  build: string[];
+  answerAngles: string[];
+};
+
+type AnswerSeed = {
+  question: string;
+  answer: string;
+  followUp: string;
+};
+
 const dailyRhythm = [
   { label: "Recall", minutes: "25m", detail: "Answer from memory before reading notes." },
   { label: "Drill", minutes: "55m", detail: "Practice 6-8 questions out loud with a timer." },
@@ -76,6 +90,224 @@ const preparationIntros: PreparationIntro[] = [
       "Which system would you redesign from your past work?",
       "What trade-off from your resume would you explain first?"
     ]
+  }
+];
+
+const studyTracks: StudyTrack[] = [
+  {
+    title: "Opening story and preparation",
+    focus: "Make the first five minutes controlled, honest, and easy to follow.",
+    study: [
+      "Resume proof map: context, ownership, metric, trade-off, evidence, and improvement.",
+      "STAR and six-sentence answer structures for technical and behavioral answers.",
+      "Role signals from the job description: backend ownership, reliability, data performance, API design, and communication."
+    ],
+    build: [
+      "45-second and 90-second resume walkthroughs.",
+      "Present-tense and past-tense versions of how you prepared.",
+      "A red/yellow/green list of resume bullets by confidence."
+    ],
+    answerAngles: [
+      "Walk me through your resume.",
+      "How did you prepare for this interview?",
+      "What kind of role are you targeting?"
+    ]
+  },
+  {
+    title: "Java and Spring backend",
+    focus: "Defend your core backend strength without drifting into tool buzzwords.",
+    study: [
+      "Java collections, immutability, exception handling, streams at a practical level, and common object-oriented design choices.",
+      "ExecutorService, thread pools, queue depth, batch size, blocking vs non-blocking work, and basic concurrency failure modes.",
+      "Spring controllers, services, dependency injection, validation, error handling, logging, transaction boundaries, and REST contracts."
+    ],
+    build: [
+      "One payroll event flow diagram from intake to processing result.",
+      "One REST API contract with request, response, errors, pagination, and idempotency behavior.",
+      "One throughput story showing baseline, bottleneck, change, metric, and remaining risk."
+    ],
+    answerAngles: [
+      "How did the thread-pool redesign improve throughput?",
+      "How would you design a payroll events API?",
+      "How do you handle retries and duplicate requests?"
+    ]
+  },
+  {
+    title: "Event processing and reliability",
+    focus: "Show that you think about failure, not only happy-path coding.",
+    study: [
+      "Synchronous vs asynchronous workflows, batching, backpressure, retry policies, deduplication, and idempotency keys.",
+      "Dead-letter handling, audit logs, monitoring signals, alert thresholds, and replay safety.",
+      "Throughput, latency, queue wait time, downstream capacity, and how one bottleneck moves after optimization."
+    ],
+    build: [
+      "A failure-mode table: duplicate event, timeout, bad payload, downstream outage, partial success.",
+      "A retry policy with max attempts, delay, idempotency, and audit trail.",
+      "A 10x-volume scaling plan with the first bottleneck you would inspect."
+    ],
+    answerAngles: [
+      "What does 10K+ events/hour mean in practical terms?",
+      "What breaks first if volume grows 10x?",
+      "How do you make event processing safe to retry?"
+    ]
+  },
+  {
+    title: "SQL, PL/SQL, and Oracle performance",
+    focus: "Make every performance claim measurable and technically grounded.",
+    study: [
+      "Indexes, selectivity, cardinality, joins, bind variables, partitions, locks, transactions, and read/write trade-offs.",
+      "EXPLAIN PLAN, AWR reports, wait events, full scans, nested loops, hash joins, and plan changes.",
+      "PL/SQL bulk operations, procedural vs set-based logic, commit frequency, and rollback safety."
+    ],
+    build: [
+      "One slow-query story with symptom, evidence, change, measurement, and rollback plan.",
+      "A before/after checklist for proving a 4x improvement.",
+      "A short answer for when an index hurts more than it helps."
+    ],
+    answerAngles: [
+      "Explain a query you optimized.",
+      "How do EXPLAIN PLAN and AWR help you debug?",
+      "How would you prove the 4x improvement is real?"
+    ]
+  },
+  {
+    title: "Oracle HCM modernization",
+    focus: "Explain modernization as risk reduction, not just UI change.",
+    study: [
+      "Legacy ADF-style flows, managed-bean responsibilities, stateless service design, and separating UI behavior from business logic.",
+      "Asynchronous validation, lazy loading, API-backed screens, regression testing, rollout safety, and backward compatibility.",
+      "How enterprise workflows protect correctness when multiple teams or modules depend on the same data."
+    ],
+    build: [
+      "A before/after flow showing what moved out of the UI layer.",
+      "A validation example with slow dependency, async response, and user-facing error state.",
+      "A regression checklist for high-risk HCM screens."
+    ],
+    answerAngles: [
+      "Why make services stateless?",
+      "What was hard about modernizing legacy flows?",
+      "How did you avoid breaking existing workflows?"
+    ]
+  },
+  {
+    title: "Samsung Android charging work",
+    focus: "Turn low-level debugging into a clear product and engineering story.",
+    study: [
+      "Battery charging basics, Time-To-Full inputs, current, voltage, temperature, charging limits, and product display behavior.",
+      "Kernel logs, device signals, charging IC behavior at a high level, and how to form debugging hypotheses from logs.",
+      "How to explain low-level work to a non-kernel interviewer without pretending hardware ownership."
+    ],
+    build: [
+      "A plain-English Time-To-Full answer and a technical Time-To-Full answer.",
+      "A diagnostic workflow: symptom, log signal, hypothesis, verification, fix or escalation.",
+      "A boundary statement for what you owned vs what hardware or platform teams owned."
+    ],
+    answerAngles: [
+      "Explain the Time-To-Full algorithm.",
+      "How did you debug charging issues?",
+      "How did the log automation help?"
+    ]
+  },
+  {
+    title: "Independent project architecture",
+    focus: "Use projects as proof of product thinking and system-design range, not GitHub activity.",
+    study: [
+      "Local-first data, optional sync, privacy boundaries, authentication, cache strategy, background jobs, and admin review flows.",
+      "PostgreSQL partitions, Redis caching, source traceability, rate limits, data freshness, and failure recovery for market workflows.",
+      "Diagnostics pipelines: log parsing, latency summaries, anomaly detection, signal vs noise, and report usefulness."
+    ],
+    build: [
+      "One architecture diagram each for Market Narrative, The Win List, and diagnostics analyzer.",
+      "A data model sketch for each project: entities, reads, writes, and risky queries.",
+      "A product trade-off list: privacy vs sync, speed vs accuracy, automation vs review."
+    ],
+    answerAngles: [
+      "Walk me through Market Narrative end to end.",
+      "What is The Win List and why local-first?",
+      "What would you improve next?"
+    ]
+  },
+  {
+    title: "Behavioral and seniority signals",
+    focus: "Prepare stories that show judgment, communication, and learning loops.",
+    study: [
+      "STAR, CARL, and trade-off answer patterns for conflict, ambiguity, missed estimates, and production risk.",
+      "How to explain disagreement without blaming, and how to show learning without sounding defensive.",
+      "Mentoring, reviews, cross-team communication, release safety, and prioritization under uncertainty."
+    ],
+    build: [
+      "Ten story cards: conflict, mistake, ambiguity, production issue, learning fast, mentoring, trade-off, deadline, quality, ownership.",
+      "A one-line lesson for each story.",
+      "One example where you changed your mind after new evidence."
+    ],
+    answerAngles: [
+      "Tell me about a time you disagreed with a design.",
+      "Tell me about a mistake.",
+      "How do you influence without authority?"
+    ]
+  }
+];
+
+const answerSeeds: AnswerSeed[] = [
+  {
+    question: "Walk me through your resume.",
+    answer:
+      "Start with your positioning: backend engineer with enterprise Java, Oracle systems, database performance, and product-minded projects. Move chronologically: Samsung gave you low-level debugging discipline, Oracle gave you backend and HCM ownership, and your independent projects show architecture and product judgment. End by connecting that pattern to the role: reliable backend systems, APIs, data performance, and clear communication.",
+    followUp: "Be ready for: why Samsung to Oracle, which work was most technically deep, and what role you want now."
+  },
+  {
+    question: "How did you prepare for this interview?",
+    answer:
+      "Say that you prepared from the resume first. For each major bullet, you mapped context, ownership, metric, trade-off, evidence, and likely follow-ups. Then mention the technical focus areas: Java/Spring backend, event processing, SQL and Oracle performance, HCM modernization, and independent project architecture.",
+    followUp: "Be ready for: weakest area, most confident bullet, and one claim you kept modest."
+  },
+  {
+    question: "Describe the payroll event engine.",
+    answer:
+      "Explain the business flow first: payroll events enter the system, get validated, processed in batches or worker flows, and produce downstream state or actions. Then explain your work: improving throughput by tuning worker execution, batch behavior, and bottlenecks while keeping reliability concerns like retries, duplicates, and auditability in view.",
+    followUp: "Be ready for: what 10K+ events/hour means, what bottleneck remained, and how retries were made safe."
+  },
+  {
+    question: "How did the thread-pool redesign improve performance?",
+    answer:
+      "Do not say 'more threads made it faster.' Say the old setup likely had mismatch between workload, queueing, worker count, and downstream capacity. The redesign improved how work was scheduled and batched, reducing wait time or contention. Defend the metric with baseline, measurement window, and side-effect checks.",
+    followUp: "Be ready for: thread count choice, queue depth, CPU vs I/O bottleneck, and how you avoided overloading downstream systems."
+  },
+  {
+    question: "Explain a SQL performance improvement.",
+    answer:
+      "Use a clean diagnostic sequence: symptom, slow query or report, execution evidence, suspected cause, change, measurement, and safety check. Mention concepts only when they explain the change: index selectivity, join order, cardinality, full scan, bind variables, partitions, or PL/SQL bulk work.",
+    followUp: "Be ready for: why not just add an index, how AWR helped, and how you proved the 4x result."
+  },
+  {
+    question: "What was hard about HCM modernization?",
+    answer:
+      "Frame it as changing behavior safely in an enterprise workflow. The hard part is not only UI migration; it is separating business logic, keeping services stateless where appropriate, preserving validations, avoiding regressions, and making screens faster without changing payroll or HCM correctness.",
+    followUp: "Be ready for: stateless service benefits, lazy loading, async validation, and testing strategy."
+  },
+  {
+    question: "Walk me through Market Narrative.",
+    answer:
+      "Describe it like a pipeline: sources come in, signals are normalized, technical indicators or clustering organize them, a review layer protects quality, data is stored with traceability, and the public side reads from optimized storage or cache. Then explain the trade-offs around freshness, correctness, cost, and source-led narratives.",
+    followUp: "Be ready for: Redis, PostgreSQL partitions, source traceability, failure handling, and what you would scale first."
+  },
+  {
+    question: "What is The Win List?",
+    answer:
+      "Describe the product problem, not the repository. It helps users track daily wins and notes with a local-first privacy boundary, with optional sync only when useful. The strongest answer is about behavior, privacy, and product judgment, not commit history.",
+    followUp: "Be ready for: why local-first, what data is sensitive, what optional sync changes, and what you would improve."
+  },
+  {
+    question: "What is one area you are improving?",
+    answer:
+      "Pick a real but non-dangerous area: making complex systems easier to explain under time pressure, or deepening system-design language around failure handling and scaling. Then show the repair loop: diagrams, timed answers, and cutting unsupported claims.",
+    followUp: "Be ready for: how you measure improvement and what topic still needs more reps."
+  },
+  {
+    question: "What do you do when you do not know an answer?",
+    answer:
+      "Say the boundary clearly, then reason from what you do know. For example: 'I have not owned that exact part deeply, but I would inspect the contract, logs, data flow, and failure mode first.' This protects credibility and still shows engineering judgment.",
+    followUp: "Be ready for: a time you had to learn a system quickly."
   }
 ];
 
@@ -452,6 +684,98 @@ export function ResumeDrillPlan() {
                   ))}
                 </ul>
               </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <ClipboardList className="text-cobalt" size={20} aria-hidden="true" />
+            <h2 className="text-xl font-black text-ink">Study roadmap: material to learn</h2>
+          </div>
+          <span className="rounded-full bg-cobalt/10 px-3 py-1 text-xs font-black text-cobalt">
+            Study first, then drill
+          </span>
+        </div>
+        <p className="max-w-4xl text-sm font-bold leading-6 text-slate-600">
+          Use this as the syllabus behind the resume drill. For each track, revise the concepts, produce one
+          concrete artifact, then practice the answer angles until they sound natural.
+        </p>
+        <div className="mt-4 grid gap-4">
+          {studyTracks.map((track) => (
+            <article className="rounded-[8px] border border-line bg-panel p-4" key={track.title}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-black text-ink">{track.title}</h3>
+                  <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{track.focus}</p>
+                </div>
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">
+                  Material + artifact + answers
+                </span>
+              </div>
+              <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-normal text-cobalt">Study material</p>
+                  <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
+                    {track.study.map((item) => (
+                      <li className="flex gap-2" key={item}>
+                        <CheckCircle2 className="mt-1 shrink-0 text-cobalt" size={15} aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-normal text-moss">Build before interview</p>
+                  <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
+                    {track.build.map((item) => (
+                      <li className="flex gap-2" key={item}>
+                        <CheckCircle2 className="mt-1 shrink-0 text-moss" size={15} aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-normal text-coral">Answer angles</p>
+                  <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
+                    {track.answerAngles.map((item) => (
+                      <li className="flex gap-2" key={item}>
+                        <Sparkles className="mt-1 shrink-0 text-coral" size={14} aria-hidden="true" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Target className="text-coral" size={20} aria-hidden="true" />
+            <h2 className="text-xl font-black text-ink">Core answer guide</h2>
+          </div>
+          <span className="rounded-full bg-coral/10 px-3 py-1 text-xs font-black text-coral">
+            Answer direction, not memorization
+          </span>
+        </div>
+        <p className="max-w-4xl text-sm font-bold leading-6 text-slate-600">
+          These are the answer paths to rehearse. Keep the facts true, then fill in the exact project detail and metric
+          from your resume proof map.
+        </p>
+        <div className="mt-4 grid gap-4 lg:grid-cols-2">
+          {answerSeeds.map((seed) => (
+            <article className="rounded-[8px] border border-line bg-panel p-4" key={seed.question}>
+              <h3 className="text-base font-black text-ink">{seed.question}</h3>
+              <p className="mt-3 text-sm font-bold leading-6 text-slate-600">{seed.answer}</p>
+              <p className="mt-3 text-xs font-black uppercase tracking-normal text-slate-500">Follow-up to prepare</p>
+              <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{seed.followUp}</p>
             </article>
           ))}
         </div>
