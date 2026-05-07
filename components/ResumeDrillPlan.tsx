@@ -33,12 +33,6 @@ type AnswerFrame = {
   steps: string[];
 };
 
-type PreparationIntro = {
-  title: string;
-  script: string;
-  likelyFollowUps: string[];
-};
-
 type StudyTrack = {
   title: string;
   focus: string;
@@ -49,11 +43,14 @@ type StudyTrack = {
 
 type AnswerSeed = {
   question: string;
+  tested: string;
   answer: string;
-  followUp: string;
+  prepare: string[];
+  followUps: string[];
+  avoid: string[];
 };
 
-type ResumeSection = "study" | "answers" | "sprint" | "questions" | "prep" | "guardrails";
+type ResumeSection = "study" | "answers" | "sprint" | "questions" | "guardrails";
 
 const dailyRhythm = [
   { label: "Recall", minutes: "25m", detail: "Answer from memory before reading notes." },
@@ -63,56 +60,23 @@ const dailyRhythm = [
   { label: "Repair", minutes: "15m", detail: "Patch weak facts, metrics, and trade-off language." }
 ];
 
-const preparationIntros: PreparationIntro[] = [
-  {
-    title: "30-second preparation intro",
-    script:
-      "I structured my preparation around my resume instead of studying random topics. For each major bullet, I prepared the context, what I owned, the metric, and the follow-up questions I may get. My main focus areas are Java/Spring backend work, payroll and event processing, SQL performance tuning, Oracle HCM modernization, and explaining my independent projects clearly.",
-    likelyFollowUps: [
-      "Which bullet did you spend the most time preparing?",
-      "Where do you still feel less confident?",
-      "Which resume bullet are you most confident defending?"
-    ]
-  },
-  {
-    title: "90-second preparation intro",
-    script:
-      "I broke my preparation into three parts. First, I made each resume line defendable: context, problem, my change, result, trade-off, and what I would improve now. Second, I practiced technical follow-ups around the work I actually claim: Java/Spring API design, batch and event processing, SQL query tuning, PL/SQL, execution plans, and system-design discussions from payroll and my projects. Third, I practiced answering out loud and trimming anything that sounded unsupported or too broad. My goal is to be accurate and clear, not to sound like I know every tool deeply.",
-    likelyFollowUps: [
-      "Give me an example of a claim you decided to keep modest.",
-      "What was hardest to explain clearly?",
-      "What would you improve in one of these systems?"
-    ]
-  },
-  {
-    title: "If asked: how did you prepare for this company?",
-    script:
-      "I prepared by reading the role signals and matching them to real parts of my experience. For this role, I would connect backend ownership, reliability, database performance, API design, and communication to examples from my resume. I also prepared follow-up paths so if the interviewer turns a resume point into a design question, I can explain data flow, bottlenecks, failure cases, and trade-offs without using buzzwords.",
-    likelyFollowUps: [
-      "What part of this role maps best to your experience?",
-      "Which system would you redesign from your past work?",
-      "What trade-off from your resume would you explain first?"
-    ]
-  }
-];
-
 const studyTracks: StudyTrack[] = [
   {
-    title: "Opening story and preparation",
-    focus: "Make the first five minutes controlled, honest, and easy to follow.",
+    title: "Opening and career narrative",
+    focus: "Make the first five minutes controlled, technical, and tied to the resume.",
     study: [
-      "Resume proof map: context, ownership, metric, trade-off, evidence, and improvement.",
-      "STAR and six-sentence answer structures for technical and behavioral answers.",
+      "Resume proof map: context, ownership, metric, trade-off, evidence, and what you would improve.",
+      "Career transitions: Samsung low-level debugging to Oracle enterprise backend and database-heavy systems.",
       "Role signals from the job description: backend ownership, reliability, data performance, API design, and communication."
     ],
     build: [
       "45-second and 90-second resume walkthroughs.",
-      "Present-tense and past-tense versions of how you prepared.",
+      "A crisp Samsung-to-Oracle transition story.",
       "A red/yellow/green list of resume bullets by confidence."
     ],
     answerAngles: [
       "Walk me through your resume.",
-      "How did you prepare for this interview?",
+      "Why did you move from Samsung to Oracle?",
       "What kind of role are you targeting?"
     ]
   },
@@ -253,64 +217,228 @@ const studyTracks: StudyTrack[] = [
 
 const answerSeeds: AnswerSeed[] = [
   {
-    question: "Walk me through your resume.",
+    question: "Resume walkthrough: backend systems narrative",
+    tested: "Can you make your resume sound like one coherent engineering story instead of a list of tools?",
     answer:
-      "Start with your positioning: backend engineer with enterprise Java, Oracle systems, database performance, and product-minded projects. Move chronologically: Samsung gave you low-level debugging discipline, Oracle gave you backend and HCM ownership, and your independent projects show architecture and product judgment. End by connecting that pattern to the role: reliable backend systems, APIs, data performance, and clear communication.",
-    followUp: "Be ready for: why Samsung to Oracle, which work was most technically deep, and what role you want now."
+      "Lead with your engineering pattern: debugging real systems, then building enterprise backend flows, then using projects to show architecture judgment. Samsung should sound like the place where you learned log-driven debugging, device behavior, and careful signal interpretation. Oracle should become the center of the story: Java/Spring services, payroll/HCM workflows, event processing, SQL/PLSQL performance, and modernization work under enterprise constraints. Projects should support the story only after work experience: they show product and architecture thinking, not the main proof of seniority.",
+    prepare: [
+      "A 60-second version with no project details unless asked.",
+      "A 2-minute version with one Samsung example, two Oracle examples, and one project example.",
+      "One exact metric you can defend first: 25%, 4x, or 10K+ events/hour."
+    ],
+    followUps: [
+      "Why did you move from Samsung to Oracle?",
+      "Which Oracle system had the most ownership?",
+      "Which resume bullet should we deep dive first?"
+    ],
+    avoid: [
+      "Do not start with independent projects before work experience.",
+      "Do not sound like a general full-stack profile; keep the center of gravity on backend and data systems."
+    ]
   },
   {
-    question: "How did you prepare for this interview?",
+    question: "Payroll event engine architecture",
+    tested: "Can you explain a production-like backend system with ownership, failure handling, and measurable throughput?",
     answer:
-      "Say that you prepared from the resume first. For each major bullet, you mapped context, ownership, metric, trade-off, evidence, and likely follow-ups. Then mention the technical focus areas: Java/Spring backend, event processing, SQL and Oracle performance, HCM modernization, and independent project architecture.",
-    followUp: "Be ready for: weakest area, most confident bullet, and one claim you kept modest."
+      "Answer it as a flow, not as a component list. Start from event creation: what business action creates the payroll event, what identifiers travel with it, how validation happens, where it is persisted or staged, how workers pick it up, and what downstream payroll/HCM state changes. Then explain reliability: status transitions, audit trail, retry rules, duplicate detection, and what happens when a downstream dependency fails. Only after that discuss throughput: what limited the old path, what changed in worker execution or batching, and how the 10K+ events/hour claim was measured.",
+    prepare: [
+      "Draw the event lifecycle: received, validated, queued/staged, processing, completed, failed, retry/manual review.",
+      "Define the event key or business identifier used to reason about duplicates.",
+      "Write the measurement story: baseline window, load size, before/after throughput, and side effects checked."
+    ],
+    followUps: [
+      "Where is the transaction boundary?",
+      "How do you avoid double-processing payroll events?",
+      "What breaks first if volume doubles or grows 10x?"
+    ],
+    avoid: [
+      "Do not say only 'thread pool improved throughput.' That skips the system design.",
+      "Do not claim exactly-once processing unless you can explain the storage and transaction guarantees."
+    ]
   },
   {
-    question: "Describe the payroll event engine.",
+    question: "Thread-pool and batching performance",
+    tested: "Can you reason about concurrency tuning without giving the shallow 'more threads is faster' answer?",
     answer:
-      "Explain the business flow first: payroll events enter the system, get validated, processed in batches or worker flows, and produce downstream state or actions. Then explain your work: improving throughput by tuning worker execution, batch behavior, and bottlenecks while keeping reliability concerns like retries, duplicates, and auditability in view.",
-    followUp: "Be ready for: what 10K+ events/hour means, what bottleneck remained, and how retries were made safe."
+      "Start with workload classification. If event processing spends time waiting on database or downstream calls, the tuning logic is different from CPU-bound processing. Then explain the old bottleneck: worker starvation, queue buildup, oversized batches, undersized batches, lock contention, connection-pool pressure, or downstream throttling. A strong answer states what you changed, why that value was chosen, and what you watched afterward: queue wait time, throughput, error rate, DB load, thread utilization, and downstream latency. The senior-level piece is saying what limit you did not cross.",
+    prepare: [
+      "Thread-pool parameters: core/max size, queue type, rejection policy, timeout behavior if applicable.",
+      "Batch-size trade-off: fewer DB calls vs memory, lock duration, latency, and retry blast radius.",
+      "Before/after signals: queue depth, average processing time, p95/p99 latency, CPU, DB sessions, error rate."
+    ],
+    followUps: [
+      "How did you choose thread count?",
+      "What happens if every worker blocks on DB?",
+      "How do you know the fix did not just move the bottleneck?"
+    ],
+    avoid: [
+      "Do not claim linear scaling with thread count.",
+      "Do not ignore database connection pool size when talking about worker count."
+    ]
   },
   {
-    question: "How did the thread-pool redesign improve performance?",
+    question: "Idempotency, retries, and duplicate events",
+    tested: "Can you protect correctness when systems retry, timeout, or receive duplicates?",
     answer:
-      "Do not say 'more threads made it faster.' Say the old setup likely had mismatch between workload, queueing, worker count, and downstream capacity. The redesign improved how work was scheduled and batched, reducing wait time or contention. Defend the metric with baseline, measurement window, and side-effect checks.",
-    followUp: "Be ready for: thread count choice, queue depth, CPU vs I/O bottleneck, and how you avoided overloading downstream systems."
+      "Define the business identity first: the same payroll event should map to the same logical operation. Then walk through cases. On first processing, create or claim the processing record. On retry, check current status before doing work. On duplicate, return the existing result or skip safely. On timeout or partial success, the system needs a persisted status that prevents blind re-execution. Mention unique constraints, status transitions, audit records, and replay rules. Separate HTTP retry from business retry; the transport can repeat, but the business operation must remain controlled.",
+    prepare: [
+      "A status model: received, in_progress, completed, failed_retryable, failed_terminal, manual_review.",
+      "The idempotency key: event id, employee/payroll cycle key, source transaction id, or another natural key.",
+      "One example of a partial failure and how the next retry behaves."
+    ],
+    followUps: [
+      "Where would you put the unique constraint?",
+      "What if processing succeeds but response fails?",
+      "How would you replay failed events safely?"
+    ],
+    avoid: [
+      "Do not use 'idempotent' as a buzzword without naming the key.",
+      "Do not say retries solve reliability if duplicates can change payroll state twice."
+    ]
   },
   {
-    question: "Explain a SQL performance improvement.",
+    question: "SQL and PL/SQL performance defense",
+    tested: "Can you prove a database performance claim with execution evidence, not slogans?",
     answer:
-      "Use a clean diagnostic sequence: symptom, slow query or report, execution evidence, suspected cause, change, measurement, and safety check. Mention concepts only when they explain the change: index selectivity, join order, cardinality, full scan, bind variables, partitions, or PL/SQL bulk work.",
-    followUp: "Be ready for: why not just add an index, how AWR helped, and how you proved the 4x result."
+      "A strong spoken answer should sound like this: the slow path was not just 'a query'; it was a specific payroll or HCM flow with a measurable pain point such as report timeout, batch delay, high DB time, or lock wait. I first separated application time from DB time using logs, elapsed time, AWR/session evidence, or repeated runs. Then I inspected the plan and the data pattern: which tables were driving the query, expected vs returned rows, join method, full scan vs index access, partition pruning, bind variables, and whether the optimizer had bad cardinality. The fix depends on the evidence: rewrite predicates or joins, add or change an index only if selectivity and write cost make sense, refresh stats if the optimizer is misled, use partition pruning if the access pattern supports it, or replace row-by-row PL/SQL with set-based or bulk operations. The result is not credible until I can show before/after runtime on comparable input, the changed plan or DB metric, and that the fix did not hurt writes or related queries.",
+    prepare: [
+      "One real query shape: main tables, joins, predicates, expected row counts, and why the old plan was expensive.",
+      "Execution evidence: plan hash or plan change, estimated vs actual cardinality if known, buffer gets, elapsed time, wait event, or AWR section.",
+      "The fix category: rewrite, index, stats refresh, bind variable issue, partition pruning, bulk PL/SQL, or removing row-by-row work.",
+      "Validation: same input size, before/after runtime, side effects on writes, other queries, and rollback plan."
+    ],
+    followUps: [
+      "Why did the optimizer choose the bad plan?",
+      "Why was adding an index safe or unsafe?",
+      "How did you distinguish DB time from application time?",
+      "What would happen as data volume grows 10x?",
+      "How did you prevent the improvement from regressing later?"
+    ],
+    avoid: [
+      "Do not say 'I used EXPLAIN PLAN and optimized it' without naming what the plan showed.",
+      "Do not claim an index fixed it unless you can explain selectivity and write overhead.",
+      "Do not quote 4x unless you can define baseline, measurement window, and workload size."
+    ]
   },
   {
-    question: "What was hard about HCM modernization?",
+    question: "HCM modernization: ADF to service-backed flows",
+    tested: "Can you explain modernization as architecture and risk reduction, not UI cosmetics?",
     answer:
-      "Frame it as changing behavior safely in an enterprise workflow. The hard part is not only UI migration; it is separating business logic, keeping services stateless where appropriate, preserving validations, avoiding regressions, and making screens faster without changing payroll or HCM correctness.",
-    followUp: "Be ready for: stateless service benefits, lazy loading, async validation, and testing strategy."
+      "Pick one flow and explain before/after. Before: screen-managed state, tightly coupled validation, heavy page load, or business logic living too close to the UI. After: service-backed contract, clearer validation boundary, stateless behavior where possible, lazy loading for expensive data, and async validation when the screen should not block. The senior-level answer is about preserving behavior: how you avoided regressions, how contracts were tested, and how rollout risk was controlled in an enterprise HCM workflow.",
+    prepare: [
+      "One concrete legacy flow and what made it risky.",
+      "Before/after ownership: UI state, service method, validation, persistence, and error display.",
+      "Testing plan: unit, service contract, regression paths, and high-risk data cases."
+    ],
+    followUps: [
+      "Why are stateless services easier to operate?",
+      "What validation stayed client-side vs server-side?",
+      "How did lazy loading change performance and failure modes?"
+    ],
+    avoid: [
+      "Do not make it sound like a cosmetic UI migration.",
+      "Do not overclaim ownership of every layer if you mainly owned backend/service pieces."
+    ]
   },
   {
-    question: "Walk me through Market Narrative.",
+    question: "Samsung Time-To-Full and charging diagnostics",
+    tested: "Can you turn low-level device work into a clear debugging and product-impact story?",
     answer:
-      "Describe it like a pipeline: sources come in, signals are normalized, technical indicators or clustering organize them, a review layer protects quality, data is stored with traceability, and the public side reads from optimized storage or cache. Then explain the trade-offs around freshness, correctness, cost, and source-led narratives.",
-    followUp: "Be ready for: Redis, PostgreSQL partitions, source traceability, failure handling, and what you would scale first."
+      "Start with what the user sees: the phone estimates time until full charge. Then explain the signals at a safe level: battery level, charge current, voltage, thermal state, charger type, charging limits, and platform readings. Your strongest story is the diagnostic loop: observe incorrect or unstable estimate, inspect logs, correlate with charging state, isolate whether the issue is algorithm logic, platform signal, or hardware behavior, then fix or route correctly. Keep ownership boundaries clear.",
+    prepare: [
+      "A plain-English explanation of Time-To-Full.",
+      "A technical explanation of the signals used by the estimate.",
+      "One debugging story with symptom, logs, hypothesis, verification, and result."
+    ],
+    followUps: [
+      "What causes Time-To-Full to fluctuate?",
+      "How did your log automation reduce manual debugging time?",
+      "How did you know it was not a hardware issue?"
+    ],
+    avoid: [
+      "Do not pretend to own hardware design.",
+      "Do not drown the answer in kernel terms before the interviewer asks."
+    ]
   },
   {
-    question: "What is The Win List?",
+    question: "Market Narrative architecture",
+    tested: "Can you defend a project as a real system with data flow, quality control, and scaling trade-offs?",
     answer:
-      "Describe the product problem, not the repository. It helps users track daily wins and notes with a local-first privacy boundary, with optional sync only when useful. The strongest answer is about behavior, privacy, and product judgment, not commit history.",
-    followUp: "Be ready for: why local-first, what data is sensitive, what optional sync changes, and what you would improve."
+      "Describe the pipeline from raw source to published narrative. Sources are ingested, normalized, grouped into signals, enriched with technical indicators or clustering, checked through review or quality gates, stored with traceability, cached for read paths, and exposed publicly. Then defend the hard parts: source credibility, stale data, failed ingestion, duplicate stories, cache invalidation, and cost. Make clear that narratives are source-led and reviewable, not unsupported AI claims.",
+    prepare: [
+      "Architecture diagram: ingestion, processing, storage, cache, review, public read path.",
+      "Data model: source, asset/topic, signal, generated narrative, review status, published artifact.",
+      "Scaling path: first bottleneck, cache strategy, partitioning reason, and background job behavior."
+    ],
+    followUps: [
+      "Why PostgreSQL partitions?",
+      "Why Redis and what keys would be cached?",
+      "How do you prevent stale or unsupported narratives?"
+    ],
+    avoid: [
+      "Do not describe it as magic market prediction.",
+      "Do not claim production-grade scale unless you can show traffic, ops, and monitoring proof."
+    ]
   },
   {
-    question: "What is one area you are improving?",
+    question: "The Win List local-first product boundary",
+    tested: "Can you talk about a project honestly when GitHub history is not strong evidence?",
     answer:
-      "Pick a real but non-dangerous area: making complex systems easier to explain under time pressure, or deepening system-design language around failure handling and scaling. Then show the repair loop: diagrams, timed answers, and cutting unsupported claims.",
-    followUp: "Be ready for: how you measure improvement and what topic still needs more reps."
+      "Do not sell this as a major engineering achievement. Sell it as product judgment. The app helps users track daily wins and notes, and local-first makes sense because the data is personal and should work without a cloud dependency. Optional sync is a trade-off: convenience and backup vs privacy, conflict handling, and auth complexity. The defensible answer is about data boundary, offline behavior, and what you would improve next.",
+    prepare: [
+      "Local data model: win, date, note, tag/status if applicable.",
+      "Privacy boundary: what stays local, what sync would change, and what consent means.",
+      "Future improvement: export/import, backup, reminders, or conflict-safe sync."
+    ],
+    followUps: [
+      "Why local-first instead of cloud-first?",
+      "How would sync conflicts be resolved?",
+      "What would you remove or simplify?"
+    ],
+    avoid: [
+      "Do not use commit history as evidence.",
+      "Do not overstate it as a complex backend system."
+    ]
   },
   {
-    question: "What do you do when you do not know an answer?",
+    question: "Java diagnostics analyzer",
+    tested: "Can you connect a project to real performance and observability instincts?",
     answer:
-      "Say the boundary clearly, then reason from what you do know. For example: 'I have not owned that exact part deeply, but I would inspect the contract, logs, data flow, and failure mode first.' This protects credibility and still shows engineering judgment.",
-    followUp: "Be ready for: a time you had to learn a system quickly."
+      "Explain the input-to-action loop. Inputs could be logs, SQL latency lines, thread usage, memory patterns, or operational traces. The analyzer should parse and group signals, calculate severity, identify repeated slow paths, and produce a report a developer can act on. The senior-level discussion is noise control: thresholds, false positives, correlation across signals, and what should be alerted vs simply reported.",
+    prepare: [
+      "One sample input and the output report it produces.",
+      "Threshold logic: slow SQL, repeated error, memory warning, thread saturation, or anomaly condition.",
+      "How a developer uses the report to decide the next debugging step."
+    ],
+    followUps: [
+      "How do you avoid noisy alerts?",
+      "How would scheduled anomaly detection work?",
+      "What would you add to make it production-ready?"
+    ],
+    avoid: [
+      "Do not make it sound like full observability infrastructure.",
+      "Do not claim AWR-level depth unless you can show the specific fields and analysis."
+    ]
+  },
+  {
+    question: "Behavioral: design disagreement or production risk",
+    tested: "Can you show judgment without blaming people or sounding passive?",
+    answer:
+      "Use one real story with stakes. Name the system, the risk, what you believed, what the other option was, and what evidence you used. Show how you communicated: design review, test data, production risk, rollback concern, or performance measurement. End with the decision, compromise, and what changed afterward. This is not a morality story; it is proof that you can reason under constraints.",
+    prepare: [
+      "One disagreement story with technical evidence.",
+      "One production-risk story with mitigation and rollback thinking.",
+      "One learning story where new evidence changed your mind."
+    ],
+    followUps: [
+      "What would you do differently now?",
+      "How did you bring others along?",
+      "What was the measurable outcome?"
+    ],
+    avoid: [
+      "Do not blame another team.",
+      "Do not use a story where your action had no visible consequence."
+    ]
   }
 ];
 
@@ -332,8 +460,8 @@ const drillDays: DrillDay[] = [
     objective: "Make the first five minutes calm, senior, and consistent.",
     drills: [
       "Prepare 45-second, 90-second, and 2-minute versions of 'Tell me about yourself.'",
-      "Prepare 30-second and 90-second answers for 'How did you prepare for this interview?'",
       "Practice transitions from Samsung to Oracle and from backend work to product projects.",
+      "Prepare a concise answer for your strongest technical area and the resume bullet you want to lead with.",
       "Prepare a clean answer for relocation, role preference, and why now."
     ],
     proof: "Three recorded intros, each under its target time."
@@ -480,7 +608,7 @@ const drillGroups: DrillGroup[] = [
       "Walk me through your resume.",
       "Why did you move from Samsung to Oracle?",
       "What kind of role are you targeting now?",
-      "How did you prepare for this interview?",
+      "Which resume bullet should we deep dive first?",
       "What is your strongest engineering area?",
       "What is one area you are actively improving?"
     ]
@@ -625,7 +753,6 @@ const resumeSections: { id: ResumeSection; label: string; detail: string }[] = [
   { id: "answers", label: "Answers", detail: "How to respond" },
   { id: "sprint", label: "14 Days", detail: "Daily plan" },
   { id: "questions", label: "Questions", detail: "Drill bank" },
-  { id: "prep", label: "Intro", detail: "Prep story" },
   { id: "guardrails", label: "Guardrails", detail: "Stay honest" }
 ];
 
@@ -690,7 +817,7 @@ export function ResumeDrillPlan() {
       </div>
 
       <section className="sticky top-3 z-20 rounded-[8px] border border-line bg-paper/95 p-3 shadow-calm backdrop-blur">
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6" aria-label="Resume drill sections">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5" aria-label="Resume drill sections">
           {resumeSections.map((section) => {
             const selected = activeSection === section.id;
             return (
@@ -731,45 +858,6 @@ export function ResumeDrillPlan() {
           </p>
         </div>
       </div>
-
-      {activeSection === "prep" ? (
-        <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Mic2 className="text-violet" size={20} aria-hidden="true" />
-            <h2 className="text-xl font-black text-ink">How to introduce your preparation</h2>
-          </div>
-          <span className="rounded-full bg-violet/10 px-3 py-1 text-xs font-black text-violet">
-            Prep story becomes question fuel
-          </span>
-        </div>
-        <p className="max-w-4xl text-sm font-bold leading-6 text-slate-600">
-          Use these as templates, not memorized speeches. If you are still preparing, speak in present tense:
-          "I am structuring my preparation..." If the interview is after the sprint, say "I structured my preparation..."
-          Every sentence should invite a follow-up you are ready to answer.
-        </p>
-        <div className="mt-4 grid gap-4 lg:grid-cols-3">
-          {preparationIntros.map((intro) => (
-            <article className="rounded-[8px] border border-line bg-panel p-4" key={intro.title}>
-              <h3 className="text-base font-black text-ink">{intro.title}</h3>
-              <p className="mt-3 text-sm font-bold leading-6 text-slate-600">{intro.script}</p>
-              <div className="mt-4 rounded-[8px] border border-line bg-white p-3">
-                <p className="text-xs font-black uppercase tracking-normal text-slate-500">Likely questions from this intro</p>
-                <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
-                  {intro.likelyFollowUps.map((question) => (
-                    <li className="flex gap-2" key={question}>
-                      <Sparkles className="mt-1 shrink-0 text-gold" size={14} aria-hidden="true" />
-                      <span>{question}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      ) : null}
 
       {activeSection === "study" ? (
       <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
@@ -863,15 +951,15 @@ export function ResumeDrillPlan() {
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Target className="text-coral" size={20} aria-hidden="true" />
-            <h2 className="text-xl font-black text-ink">Core answer guide</h2>
+            <h2 className="text-xl font-black text-ink">Resume defense answer guide</h2>
           </div>
           <span className="rounded-full bg-coral/10 px-3 py-1 text-xs font-black text-coral">
             Answer direction, not memorization
           </span>
         </div>
         <p className="max-w-4xl text-sm font-bold leading-6 text-slate-600">
-          These are the answer paths to rehearse. Keep the facts true, then fill in the exact project detail and metric
-          from your resume proof map.
+          These are deeper answer maps for resume drill rounds. Fill in your exact system details, but use this level
+          of depth so the answer survives follow-ups.
         </p>
         <div className="mt-4 grid gap-4 lg:grid-cols-[340px_1fr]">
           <nav className="grid content-start gap-2" aria-label="Core answer questions">
@@ -893,12 +981,47 @@ export function ResumeDrillPlan() {
             })}
           </nav>
           <article className="rounded-[8px] border border-line bg-panel p-5">
-            <p className="text-xs font-black uppercase tracking-normal text-coral">Selected answer path</p>
+            <p className="text-xs font-black uppercase tracking-normal text-coral">Selected defense path</p>
             <h3 className="mt-2 text-2xl font-black text-ink">{activeAnswer.question}</h3>
+            <div className="mt-4 rounded-[8px] border border-coral/20 bg-white p-4">
+              <p className="text-xs font-black uppercase tracking-normal text-coral">What the interviewer is testing</p>
+              <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{activeAnswer.tested}</p>
+            </div>
             <p className="mt-4 text-sm font-bold leading-7 text-slate-600">{activeAnswer.answer}</p>
-            <div className="mt-5 rounded-[8px] border border-line bg-white p-4">
-              <p className="text-xs font-black uppercase tracking-normal text-slate-500">Follow-up to prepare</p>
-              <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{activeAnswer.followUp}</p>
+            <div className="mt-5 grid gap-4 xl:grid-cols-3">
+              <div className="rounded-[8px] border border-line bg-white p-4">
+                <p className="text-xs font-black uppercase tracking-normal text-cobalt">Exact details to prepare</p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
+                  {activeAnswer.prepare.map((item) => (
+                    <li className="flex gap-2" key={item}>
+                      <CheckCircle2 className="mt-1 shrink-0 text-cobalt" size={15} aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-[8px] border border-line bg-white p-4">
+                <p className="text-xs font-black uppercase tracking-normal text-gold">Likely deeper follow-ups</p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
+                  {activeAnswer.followUps.map((item) => (
+                    <li className="flex gap-2" key={item}>
+                      <Sparkles className="mt-1 shrink-0 text-gold" size={14} aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-[8px] border border-line bg-white p-4">
+                <p className="text-xs font-black uppercase tracking-normal text-coral">Do not claim</p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
+                  {activeAnswer.avoid.map((item) => (
+                    <li className="flex gap-2" key={item}>
+                      <ShieldCheck className="mt-1 shrink-0 text-coral" size={15} aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </article>
         </div>
