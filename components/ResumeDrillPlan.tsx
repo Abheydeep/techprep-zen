@@ -50,31 +50,31 @@ const preparationIntros: PreparationIntro[] = [
   {
     title: "30-second preparation intro",
     script:
-      "I prepared around my resume rather than studying randomly. I mapped each major bullet to the system, my ownership, the metric, and likely follow-ups. The deepest focus areas were Java/Spring backend design, payroll event processing, SQL performance tuning, Oracle HCM modernization, and the architecture of my independent projects.",
+      "I structured my preparation around my resume instead of studying random topics. For each major bullet, I prepared the context, what I owned, the metric, and the follow-up questions I may get. My main focus areas are Java/Spring backend work, payroll and event processing, SQL performance tuning, Oracle HCM modernization, and explaining my independent projects clearly.",
     likelyFollowUps: [
-      "What was your weakest area during preparation?",
-      "How did you validate that your metrics are accurate?",
+      "Which bullet did you spend the most time preparing?",
+      "Where do you still feel less confident?",
       "Which resume bullet are you most confident defending?"
     ]
   },
   {
     title: "90-second preparation intro",
     script:
-      "My preparation had three tracks. First, I rebuilt the story behind each resume line: context, problem, my change, trade-off, evidence, and what I would improve now. Second, I drilled technical depth around the areas I expect interviewers to probe: Java concurrency and batching, Spring API contracts, idempotency, PL/SQL tuning with execution plans and AWR, and system-design follow-ups from payroll and Market Narrative. Third, I practiced concise delivery by recording answers and cutting unsupported claims, especially around tools where my exposure is project-level rather than core expertise.",
+      "I broke my preparation into three parts. First, I made each resume line defendable: context, problem, my change, result, trade-off, and what I would improve now. Second, I practiced technical follow-ups around the work I actually claim: Java/Spring API design, batch and event processing, SQL query tuning, PL/SQL, execution plans, and system-design discussions from payroll and my projects. Third, I practiced answering out loud and trimming anything that sounded unsupported or too broad. My goal is to be accurate and clear, not to sound like I know every tool deeply.",
     likelyFollowUps: [
-      "Give me an example of a claim you decided not to overstate.",
-      "How would you study differently if you had one more week?",
-      "What did recording your answers reveal?"
+      "Give me an example of a claim you decided to keep modest.",
+      "What was hardest to explain clearly?",
+      "What would you improve in one of these systems?"
     ]
   },
   {
     title: "If asked: how did you prepare for this company?",
     script:
-      "I focused on matching my preparation to the role signals: backend ownership, production reliability, database performance, API design, and clear communication. I also prepared system-design extensions from my resume so that if a project becomes a design prompt, I can talk through data flow, bottlenecks, failure handling, and scaling trade-offs without drifting into buzzwords.",
+      "I prepared by reading the role signals and matching them to real parts of my experience. For this role, I would connect backend ownership, reliability, database performance, API design, and communication to examples from my resume. I also prepared follow-up paths so if the interviewer turns a resume point into a design question, I can explain data flow, bottlenecks, failure cases, and trade-offs without using buzzwords.",
     likelyFollowUps: [
       "What part of this role maps best to your experience?",
       "Which system would you redesign from your past work?",
-      "What trade-off do you think senior engineers should explain clearly?"
+      "What trade-off from your resume would you explain first?"
     ]
   }
 ];
@@ -432,8 +432,9 @@ export function ResumeDrillPlan() {
           </span>
         </div>
         <p className="max-w-4xl text-sm font-bold leading-6 text-slate-600">
-          Keep this answer honest and strategic. The goal is to show a structured preparation loop, not to claim
-          encyclopedic mastery. Every sentence should invite a follow-up you are ready to answer.
+          Use these as templates, not memorized speeches. If you are still preparing, speak in present tense:
+          "I am structuring my preparation..." If the interview is after the sprint, say "I structured my preparation..."
+          Every sentence should invite a follow-up you are ready to answer.
         </p>
         <div className="mt-4 grid gap-4 lg:grid-cols-3">
           {preparationIntros.map((intro) => (
