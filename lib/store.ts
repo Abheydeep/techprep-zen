@@ -18,7 +18,7 @@ import { formatDateKey } from "./utils";
 const ADMIN_EMAIL = "abhey@techprep.local";
 const ADMIN_PASSCODE = "zen180";
 
-type ViewMode = "dashboard" | "roadmap" | "dsa" | "system" | "quiz" | "resources";
+type ViewMode = "dashboard" | "roadmap" | "dsa" | "system" | "resume" | "quiz" | "resources";
 
 type TechPrepState = {
   authenticated: boolean;

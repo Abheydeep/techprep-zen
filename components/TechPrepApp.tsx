@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, BrainCircuit, ClipboardCheck, LayoutDashboard, Library, LogOut, Route, ServerCog } from "lucide-react";
+import { BookOpen, BrainCircuit, ClipboardCheck, FileQuestion, LayoutDashboard, Library, LogOut, Route, ServerCog } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { curriculum } from "../lib/curriculum";
 import { generateDailyItinerary } from "../lib/scheduler";
@@ -10,6 +10,7 @@ import { AdminGate } from "./AdminGate";
 import { Dashboard } from "./Dashboard";
 import { MoodBoostModal } from "./MoodBoostModal";
 import { QuizPanel } from "./QuizPanel";
+import { ResumeDrillPlan } from "./ResumeDrillPlan";
 import { Resources } from "./Resources";
 import { Roadmap } from "./Roadmap";
 import { StudyWorkspace } from "./StudyWorkspace";
@@ -21,6 +22,7 @@ const navItems = [
   { id: "roadmap", label: "Roadmap", icon: Route },
   { id: "dsa", label: "DSA", icon: BookOpen },
   { id: "system", label: "Design", icon: ServerCog },
+  { id: "resume", label: "Resume Drill", icon: FileQuestion },
   { id: "quiz", label: "Quizzes", icon: ClipboardCheck },
   { id: "resources", label: "Resources", icon: Library }
 ] as const;
@@ -118,6 +120,7 @@ export function TechPrepApp() {
         {activeView === "roadmap" ? <Roadmap /> : null}
         {activeView === "dsa" ? <StudyWorkspace /> : null}
         {activeView === "system" ? <SystemWorkspace /> : null}
+        {activeView === "resume" ? <ResumeDrillPlan /> : null}
         {activeView === "quiz" ? <QuizPanel /> : null}
         {activeView === "resources" ? <Resources /> : null}
       </motion.div>
