@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import {
   BadgeCheck,
   CalendarDays,
@@ -51,6 +52,8 @@ type AnswerSeed = {
   answer: string;
   followUp: string;
 };
+
+type ResumeSection = "study" | "answers" | "sprint" | "questions" | "prep" | "guardrails";
 
 const dailyRhythm = [
   { label: "Recall", minutes: "25m", detail: "Answer from memory before reading notes." },
@@ -617,7 +620,40 @@ const weakSpotRepairs = [
   "Do not overexplain Android kernel work. Start with product behavior, then go technical only when asked."
 ];
 
+const resumeSections: { id: ResumeSection; label: string; detail: string }[] = [
+  { id: "study", label: "Study", detail: "What to learn" },
+  { id: "answers", label: "Answers", detail: "How to respond" },
+  { id: "sprint", label: "14 Days", detail: "Daily plan" },
+  { id: "questions", label: "Questions", detail: "Drill bank" },
+  { id: "prep", label: "Intro", detail: "Prep story" },
+  { id: "guardrails", label: "Guardrails", detail: "Stay honest" }
+];
+
 export function ResumeDrillPlan() {
+  const [activeSection, setActiveSection] = useState<ResumeSection>("study");
+  const [activeTrackTitle, setActiveTrackTitle] = useState(studyTracks[0].title);
+  const [activeAnswerQuestion, setActiveAnswerQuestion] = useState(answerSeeds[0].question);
+  const [activeDayLabel, setActiveDayLabel] = useState(drillDays[0].day);
+  const [activeGroupTitle, setActiveGroupTitle] = useState(drillGroups[0].title);
+
+  const activeTrack = useMemo(
+    () => studyTracks.find((track) => track.title === activeTrackTitle) ?? studyTracks[0],
+    [activeTrackTitle]
+  );
+  const activeAnswer = useMemo(
+    () => answerSeeds.find((seed) => seed.question === activeAnswerQuestion) ?? answerSeeds[0],
+    [activeAnswerQuestion]
+  );
+  const activeDay = useMemo(
+    () => drillDays.find((day) => day.day === activeDayLabel) ?? drillDays[0],
+    [activeDayLabel]
+  );
+  const activeQuestionGroup = useMemo(
+    () => drillGroups.find((group) => group.title === activeGroupTitle) ?? drillGroups[0],
+    [activeGroupTitle]
+  );
+  const activeSectionIndex = resumeSections.findIndex((section) => section.id === activeSection) + 1;
+
   return (
     <section className="grid gap-5">
       <div className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
@@ -653,7 +689,51 @@ export function ResumeDrillPlan() {
         </div>
       </div>
 
-      <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
+      <section className="sticky top-3 z-20 rounded-[8px] border border-line bg-paper/95 p-3 shadow-calm backdrop-blur">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6" aria-label="Resume drill sections">
+          {resumeSections.map((section) => {
+            const selected = activeSection === section.id;
+            return (
+              <button
+                className={`rounded-[8px] border px-3 py-3 text-left transition ${
+                  selected
+                    ? "border-ink bg-ink text-white shadow-focus"
+                    : "border-line bg-white text-ink hover:border-cobalt"
+                }`}
+                key={section.id}
+                onClick={() => setActiveSection(section.id)}
+                type="button"
+                aria-pressed={selected}
+              >
+                <span className="block text-sm font-black">{section.label}</span>
+                <span className={`mt-1 block text-xs font-bold ${selected ? "text-slate-200" : "text-slate-500"}`}>
+                  {section.detail}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="rounded-[8px] border border-line bg-ink p-4 text-white shadow-focus">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-black uppercase tracking-normal text-gold">
+              Browse mode {activeSectionIndex}/{resumeSections.length}
+            </p>
+            <h2 className="mt-1 text-xl font-black">
+              {resumeSections.find((section) => section.id === activeSection)?.label}
+            </h2>
+          </div>
+          <p className="max-w-2xl text-sm font-bold leading-6 text-slate-300">
+            Pick one lane, study the material, then drill the answers. The full roadmap is still here, but it no
+            longer dumps every card at once.
+          </p>
+        </div>
+      </div>
+
+      {activeSection === "prep" ? (
+        <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Mic2 className="text-violet" size={20} aria-hidden="true" />
@@ -689,6 +769,9 @@ export function ResumeDrillPlan() {
         </div>
       </section>
 
+      ) : null}
+
+      {activeSection === "study" ? (
       <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -703,58 +786,79 @@ export function ResumeDrillPlan() {
           Use this as the syllabus behind the resume drill. For each track, revise the concepts, produce one
           concrete artifact, then practice the answer angles until they sound natural.
         </p>
-        <div className="mt-4 grid gap-4">
-          {studyTracks.map((track) => (
-            <article className="rounded-[8px] border border-line bg-panel p-4" key={track.title}>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-lg font-black text-ink">{track.title}</h3>
-                  <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{track.focus}</p>
-                </div>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">
-                  Material + artifact + answers
-                </span>
+        <div className="mt-4 grid gap-4 lg:grid-cols-[300px_1fr]">
+          <nav className="grid content-start gap-2" aria-label="Study roadmap tracks">
+            {studyTracks.map((track) => {
+              const selected = activeTrack.title === track.title;
+              return (
+                <button
+                  className={`rounded-[8px] border p-3 text-left transition ${
+                    selected ? "border-cobalt bg-cobalt/10 text-ink" : "border-line bg-panel text-ink hover:border-cobalt"
+                  }`}
+                  key={track.title}
+                  onClick={() => setActiveTrackTitle(track.title)}
+                  type="button"
+                  aria-pressed={selected}
+                >
+                  <span className="block text-sm font-black">{track.title}</span>
+                  <span className="mt-1 line-clamp-2 block text-xs font-bold leading-5 text-slate-500">{track.focus}</span>
+                </button>
+              );
+            })}
+          </nav>
+
+          <article className="rounded-[8px] border border-line bg-panel p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 className="text-2xl font-black text-ink">{activeTrack.title}</h3>
+                <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{activeTrack.focus}</p>
               </div>
-              <div className="mt-4 grid gap-4 lg:grid-cols-3">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-normal text-cobalt">Study material</p>
-                  <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
-                    {track.study.map((item) => (
-                      <li className="flex gap-2" key={item}>
-                        <CheckCircle2 className="mt-1 shrink-0 text-cobalt" size={15} aria-hidden="true" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-normal text-moss">Build before interview</p>
-                  <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
-                    {track.build.map((item) => (
-                      <li className="flex gap-2" key={item}>
-                        <CheckCircle2 className="mt-1 shrink-0 text-moss" size={15} aria-hidden="true" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-normal text-coral">Answer angles</p>
-                  <ul className="mt-2 grid gap-2 text-sm leading-6 text-slate-600">
-                    {track.answerAngles.map((item) => (
-                      <li className="flex gap-2" key={item}>
-                        <Sparkles className="mt-1 shrink-0 text-coral" size={14} aria-hidden="true" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">
+                Material + artifact + answers
+              </span>
+            </div>
+            <div className="mt-5 grid gap-4 lg:grid-cols-3">
+              <div className="rounded-[8px] border border-line bg-white p-4">
+                <p className="text-xs font-black uppercase tracking-normal text-cobalt">Study material</p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
+                  {activeTrack.study.map((item) => (
+                    <li className="flex gap-2" key={item}>
+                      <CheckCircle2 className="mt-1 shrink-0 text-cobalt" size={15} aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </article>
-          ))}
+              <div className="rounded-[8px] border border-line bg-white p-4">
+                <p className="text-xs font-black uppercase tracking-normal text-moss">Build before interview</p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
+                  {activeTrack.build.map((item) => (
+                    <li className="flex gap-2" key={item}>
+                      <CheckCircle2 className="mt-1 shrink-0 text-moss" size={15} aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-[8px] border border-line bg-white p-4">
+                <p className="text-xs font-black uppercase tracking-normal text-coral">Answer angles</p>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
+                  {activeTrack.answerAngles.map((item) => (
+                    <li className="flex gap-2" key={item}>
+                      <Sparkles className="mt-1 shrink-0 text-coral" size={14} aria-hidden="true" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </article>
         </div>
       </section>
 
+      ) : null}
+
+      {activeSection === "answers" ? (
       <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -769,49 +873,88 @@ export function ResumeDrillPlan() {
           These are the answer paths to rehearse. Keep the facts true, then fill in the exact project detail and metric
           from your resume proof map.
         </p>
-        <div className="mt-4 grid gap-4 lg:grid-cols-2">
-          {answerSeeds.map((seed) => (
-            <article className="rounded-[8px] border border-line bg-panel p-4" key={seed.question}>
-              <h3 className="text-base font-black text-ink">{seed.question}</h3>
-              <p className="mt-3 text-sm font-bold leading-6 text-slate-600">{seed.answer}</p>
-              <p className="mt-3 text-xs font-black uppercase tracking-normal text-slate-500">Follow-up to prepare</p>
-              <p className="mt-1 text-sm font-bold leading-6 text-slate-600">{seed.followUp}</p>
-            </article>
-          ))}
+        <div className="mt-4 grid gap-4 lg:grid-cols-[340px_1fr]">
+          <nav className="grid content-start gap-2" aria-label="Core answer questions">
+            {answerSeeds.map((seed) => {
+              const selected = activeAnswer.question === seed.question;
+              return (
+                <button
+                  className={`rounded-[8px] border p-3 text-left text-sm font-black transition ${
+                    selected ? "border-coral bg-coral/10 text-ink" : "border-line bg-panel text-ink hover:border-coral"
+                  }`}
+                  key={seed.question}
+                  onClick={() => setActiveAnswerQuestion(seed.question)}
+                  type="button"
+                  aria-pressed={selected}
+                >
+                  {seed.question}
+                </button>
+              );
+            })}
+          </nav>
+          <article className="rounded-[8px] border border-line bg-panel p-5">
+            <p className="text-xs font-black uppercase tracking-normal text-coral">Selected answer path</p>
+            <h3 className="mt-2 text-2xl font-black text-ink">{activeAnswer.question}</h3>
+            <p className="mt-4 text-sm font-bold leading-7 text-slate-600">{activeAnswer.answer}</p>
+            <div className="mt-5 rounded-[8px] border border-line bg-white p-4">
+              <p className="text-xs font-black uppercase tracking-normal text-slate-500">Follow-up to prepare</p>
+              <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{activeAnswer.followUp}</p>
+            </div>
+          </article>
         </div>
       </section>
 
-      <div className="grid gap-5 xl:grid-cols-[1fr_0.72fr]">
+      ) : null}
+
+      {activeSection === "sprint" ? (
+      <div className="grid gap-5">
         <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
           <div className="mb-4 flex items-center gap-2">
             <CalendarDays className="text-cobalt" size={20} aria-hidden="true" />
             <h2 className="text-xl font-black text-ink">14-day sprint calendar</h2>
           </div>
-          <div className="grid gap-3">
-            {drillDays.map((day) => (
-              <article className="rounded-[8px] border border-line bg-panel p-4" key={day.day}>
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-black uppercase tracking-normal text-cobalt">{day.day}</p>
-                    <h3 className="mt-1 text-lg font-black text-ink">{day.title}</h3>
-                  </div>
-                  <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">Proof: {day.proof}</span>
+          <div className="grid gap-4">
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-7">
+              {drillDays.map((day) => {
+                const selected = activeDay.day === day.day;
+                return (
+                  <button
+                    className={`rounded-[8px] border px-3 py-2 text-left transition ${
+                      selected ? "border-cobalt bg-cobalt/10 text-ink" : "border-line bg-panel text-ink hover:border-cobalt"
+                    }`}
+                    key={day.day}
+                    onClick={() => setActiveDayLabel(day.day)}
+                    type="button"
+                    aria-pressed={selected}
+                  >
+                    <span className="block text-xs font-black uppercase tracking-normal text-cobalt">{day.day}</span>
+                    <span className="mt-1 block text-sm font-black">{day.title}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <article className="rounded-[8px] border border-line bg-panel p-5">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-normal text-cobalt">{activeDay.day}</p>
+                  <h3 className="mt-1 text-2xl font-black text-ink">{activeDay.title}</h3>
                 </div>
-                <p className="mt-2 text-sm font-bold leading-6 text-slate-600">{day.objective}</p>
-                <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
-                  {day.drills.map((drill) => (
-                    <li className="flex gap-2" key={drill}>
-                      <CheckCircle2 className="mt-1 shrink-0 text-moss" size={15} aria-hidden="true" />
-                      <span>{drill}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
+                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">Proof: {activeDay.proof}</span>
+              </div>
+              <p className="mt-3 text-sm font-bold leading-6 text-slate-600">{activeDay.objective}</p>
+              <ul className="mt-4 grid gap-2 text-sm leading-6 text-slate-600">
+                {activeDay.drills.map((drill) => (
+                  <li className="flex gap-2" key={drill}>
+                    <CheckCircle2 className="mt-1 shrink-0 text-moss" size={15} aria-hidden="true" />
+                    <span>{drill}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
           </div>
         </section>
 
-        <aside className="grid gap-5">
+        <aside className="hidden">
           <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
             <div className="mb-4 flex items-center gap-2">
               <Target className="text-coral" size={20} aria-hidden="true" />
@@ -848,6 +991,9 @@ export function ResumeDrillPlan() {
         </aside>
       </div>
 
+      ) : null}
+
+      {activeSection === "questions" ? (
       <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -859,25 +1005,84 @@ export function ResumeDrillPlan() {
             Answer aloud, then compress
           </div>
         </div>
-        <div className="grid gap-4 lg:grid-cols-2">
-          {drillGroups.map((group) => (
-            <article className="rounded-[8px] border border-line bg-panel p-4" key={group.title}>
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <h3 className="text-base font-black text-ink">{group.title}</h3>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">{group.signal}</span>
-              </div>
-              <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-600">
-                {group.questions.map((question) => (
-                  <li className="flex gap-2" key={question}>
-                    <Sparkles className="mt-1 shrink-0 text-gold" size={14} aria-hidden="true" />
-                    <span>{question}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
+        <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
+          <nav className="grid content-start gap-2" aria-label="Question groups">
+            {drillGroups.map((group) => {
+              const selected = activeQuestionGroup.title === group.title;
+              return (
+                <button
+                  className={`rounded-[8px] border p-3 text-left transition ${
+                    selected ? "border-gold bg-gold/10 text-ink" : "border-line bg-panel text-ink hover:border-gold"
+                  }`}
+                  key={group.title}
+                  onClick={() => setActiveGroupTitle(group.title)}
+                  type="button"
+                  aria-pressed={selected}
+                >
+                  <span className="block text-sm font-black">{group.title}</span>
+                  <span className="mt-1 block text-xs font-bold text-slate-500">{group.signal}</span>
+                </button>
+              );
+            })}
+          </nav>
+          <article className="rounded-[8px] border border-line bg-panel p-5">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <h3 className="text-2xl font-black text-ink">{activeQuestionGroup.title}</h3>
+              <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-500">
+                {activeQuestionGroup.signal}
+              </span>
+            </div>
+            <ul className="mt-4 grid gap-3 text-sm leading-6 text-slate-600">
+              {activeQuestionGroup.questions.map((question) => (
+                <li className="flex gap-2 rounded-[8px] border border-line bg-white p-3" key={question}>
+                  <Sparkles className="mt-1 shrink-0 text-gold" size={14} aria-hidden="true" />
+                  <span>{question}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
         </div>
       </section>
+
+      ) : null}
+
+      {activeSection === "guardrails" ? (
+      <>
+      <div className="grid gap-5 xl:grid-cols-2">
+        <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
+          <div className="mb-4 flex items-center gap-2">
+            <Target className="text-coral" size={20} aria-hidden="true" />
+            <h2 className="text-xl font-black text-ink">Answer frameworks</h2>
+          </div>
+          <div className="grid gap-3">
+            {answerFrames.map((frame) => (
+              <article className="rounded-[8px] border border-line bg-panel p-4" key={frame.title}>
+                <h3 className="text-base font-black text-ink">{frame.title}</h3>
+                <p className="mt-1 text-xs font-black uppercase tracking-normal text-slate-500">{frame.useFor}</p>
+                <ol className="mt-3 grid gap-1 text-sm leading-6 text-slate-600">
+                  {frame.steps.map((step) => (
+                    <li key={step}>{step}</li>
+                  ))}
+                </ol>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-[8px] border border-line bg-paper p-5 shadow-calm">
+          <div className="mb-4 flex items-center gap-2">
+            <ShieldCheck className="text-moss" size={20} aria-hidden="true" />
+            <h2 className="text-xl font-black text-ink">Guardrails</h2>
+          </div>
+          <ul className="grid gap-2 text-sm leading-6 text-slate-600">
+            {weakSpotRepairs.map((repair) => (
+              <li className="rounded-[8px] border border-line bg-panel p-3" key={repair}>
+                {repair}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
 
       <section className="rounded-[8px] border border-line bg-ink p-5 text-white shadow-focus">
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -900,6 +1105,8 @@ export function ResumeDrillPlan() {
           </div>
         </div>
       </section>
+      </>
+      ) : null}
     </section>
   );
 }
