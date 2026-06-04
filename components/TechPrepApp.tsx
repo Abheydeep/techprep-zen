@@ -1,7 +1,19 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, BrainCircuit, ClipboardCheck, FileQuestion, LayoutDashboard, Library, LogOut, Route, ServerCog } from "lucide-react";
+import {
+  BookOpen,
+  BrainCircuit,
+  ClipboardCheck,
+  FileQuestion,
+  LayoutDashboard,
+  Library,
+  ListChecks,
+  LogOut,
+  Route,
+  ServerCog
+} from "lucide-react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { curriculum } from "../lib/curriculum";
 import { generateDailyItinerary } from "../lib/scheduler";
@@ -91,6 +103,13 @@ export function TechPrepApp() {
                   </button>
                 );
               })}
+              <Link
+                className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-line bg-paper px-3 text-sm font-black text-ink transition hover:border-moss focus:outline-none focus-visible:ring-2 focus-visible:ring-moss"
+                href="/skill-tracker"
+              >
+                <ListChecks size={16} aria-hidden="true" />
+                Skill Tracker
+              </Link>
               <ZenModeButton />
               <button
                 className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-line bg-paper px-3 text-sm font-black text-ink transition hover:border-coral"
